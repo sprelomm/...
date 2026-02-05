@@ -133,6 +133,16 @@
     font-family:'Playfair Display', serif;
     animation: fadeIn 2s ease-in-out;
   }
+
+  /* Animación candado abierto */
+  .unlock {
+    animation: unlock 1s ease forwards;
+  }
+  @keyframes unlock {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(-20deg) scale(1.3); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
 </style>
 </head>
 <body>
@@ -141,9 +151,10 @@
 
 <!-- 1. Página de candado -->
 <div class="container" id="page1">
-  <h1>🔒 Ingresa la clave</h1>
+  <h1 id="lock">🔒 Ingresa la clave</h1>
   <input type="password" id="password" placeholder="Tu clave especial">
   <button onclick="checkPassword()">Entrar</button>
+  <h3 id="hint" style="color:#ffe6e6; font-family:'Great Vibes', cursive;"></h3>
 </div>
 
 <!-- 2. Juego de corazones -->
@@ -180,13 +191,24 @@
   }
 
   // 1. Verificar contraseña
+  let attempts = 0;
   function checkPassword(){
     const pw = document.getElementById('password').value;
-    if(pw.toLowerCase() === 'amor'){ // Cambia la clave aquí
-      document.getElementById('page1').classList.add('hidden');
-      document.getElementById('page2').classList.remove('hidden');
+    const lock = document.getElementById('lock');
+    const hint = document.getElementById('hint');
+    if(pw.toLowerCase() === 'guanajuato'){ // Clave actual
+      lock.classList.add('unlock'); // animación candado abierto
+      hint.textContent = '💖 Clave correcta, vamos adelante!';
+      setTimeout(()=>{
+        document.getElementById('page1').classList.add('hidden');
+        document.getElementById('page2').classList.remove('hidden');
+      },800);
     }else{
-      alert('💔 Clave incorrecta, intenta otra vez.');
+      attempts++;
+      hint.textContent = '💔 Clave incorrecta, intenta otra vez.';
+      if(attempts >=3){
+        hint.textContent = '💡 Pista: La hermosa ciudad del bajío...';
+      }
     }
   }
 
@@ -195,7 +217,6 @@
     const msg = document.getElementById('heart-msg');
     if(correct){
       msg.textContent='💖 Sabía que elegirías el correcto, te amo!';
-      // Efecto de explotar corazón
       el.style.transform='scale(2)';
       el.style.opacity='0';
       setTimeout(()=> {
